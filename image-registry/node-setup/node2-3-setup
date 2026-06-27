@@ -1,0 +1,12 @@
+sudo mkdir -p /etc/rancher/k3s
+sudo tee /etc/rancher/k3s/registries.yaml <<'EOF'
+mirrors:
+  "100.103.185.96:30500":
+    endpoint:
+      - "http://100.103.185.96:30500"
+configs:
+  "100.103.185.96:30500":
+    tls:
+      insecure_skip_verify: true
+EOF
+sudo systemctl restart k3s-agent
