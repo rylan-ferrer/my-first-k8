@@ -15,6 +15,19 @@ spec:
         - name: registry
           image: registry:2
           ports: [{ containerPort: 5000 }]
+          env:
+            - name: REGISTRY_HTTP_TLS_CERTIFICATE
+              value: /certs/tls.crt
+            - name: REGISTRY_HTTP_TLS_KEY
+              value: /certs/tls.key
+          volumeMounts:
+            - name: tls
+              mountPath: /certs
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: registry-tls
 ---
 apiVersion: v1
 kind: Service
