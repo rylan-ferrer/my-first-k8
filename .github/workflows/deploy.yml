@@ -47,6 +47,6 @@ jobs:
         run: |
           # Swap the image tag in the manifest to the current commit SHA
           sed -i "s|image: .*|image: $REGISTRY/$IMAGE_NAME:${{ github.sha }}|" k8s/myapp.yml
-          kubectl apply -f k8s/myapp.yml
+          kubectl apply -f k3s/myapp.yml
           kubectl rollout status deployment/$DEPLOYMENT -n $NAMESPACE
 
