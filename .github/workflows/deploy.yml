@@ -1,0 +1,47 @@
+name: Deploy to K3s
+
+on:
+  push:
+    branches: [main]
+
+env:
+  # Replace with your control plane node's Tailscale IP and NodePort
+  REGISTRY: node1.taile8f7e9.ts.net:30500
+  IMAGE_NAME: myapp
+  DEPLOYMENT: myapp
+  NAMESPACE: default
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Allow pushing to the insecure local registry
+        run: |
+          echo '{"insecure-registries":["${{ env.REGISTRY }}"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: Build image
+        run: docker build -t $REGISTRY/$IMAGE_NAME:${{ github.sha }} .
+
+      - name: Push image to local registry
+        run: docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+
+      - name: Write kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
+
+      - name: Deploy new image to K3s
+        run: |
+          kubectl set image deployment/$DEPLOYMENT $DEPLOYMENT=$REGISTRY/$IMAGE_NAME:${{ github.sha }} -n $NAMESPACE
+          kubectl rollout status deployment/$DEPLOYMENT -n $NAMESPACE
