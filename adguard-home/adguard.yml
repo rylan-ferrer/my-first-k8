@@ -24,6 +24,8 @@ spec:
     matchLabels:
       app: adguard-home
   replicas: 1 
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
