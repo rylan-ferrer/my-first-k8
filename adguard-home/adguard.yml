@@ -49,15 +49,6 @@ spec:
         - containerPort: 443
           name: https-udp
           protocol: UDP
-        - containerPort: 3000
-          name: web
-          protocol: TCP
-        - containerPort: 53
-          name: dns-tcp
-          protocol: TCP
-        - containerPort: 53
-          name: dns-udp
-          protocol: UDP
         volumeMounts:
         - name: adguard-home-storage
           mountPath: /opt/adguardhome/data
