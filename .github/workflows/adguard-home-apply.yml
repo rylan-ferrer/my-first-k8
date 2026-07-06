@@ -1,0 +1,35 @@
+name: Apply Kubernetes Manifests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+
+env:
+  DEPLOYMENT: myapp
+  NAMESPACE: adguard-home
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          ping: node1.taile8f7e9.ts.net
+
+      - name: Write kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f k8s/
