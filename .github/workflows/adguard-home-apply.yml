@@ -1,4 +1,4 @@
-name: Apply Kubernetes Manifests
+name: Apply changes to adguard-home
 
 on:
   push:
