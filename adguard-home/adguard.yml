@@ -32,6 +32,11 @@ spec:
       containers:
       - name: adguard-home
         image: adguard/adguardhome
+        args:
+          - --work-dir
+          - /opt/adguardhome/data/work
+          - --config 
+          - /opt/adguardhome/data/AdGuardHome.yaml
         ports:
         - containerPort: 80
           name: http
@@ -53,7 +58,7 @@ spec:
           protocol: UDP
         volumeMounts:
         - name: adguard-home-storage
-          mountPath: /opt/adguardhome
+          mountPath: /opt/adguardhome/data
       volumes:
         - name: adguard-home-storage
           persistentVolumeClaim:
