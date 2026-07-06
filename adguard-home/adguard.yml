@@ -1,0 +1,98 @@
+# PersistentVolumeClaim for AdGuard Home
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adguard-home-pvc
+  namespace: adguard-home
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# Deployment for AdGuard Home
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-home
+  namespace: adguard-home
+spec:
+  selector:
+    matchLabels:
+      app: adguard-home
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: adguard-home
+    spec:
+      containers:
+      - name: adguard-home
+        image: adguard/adguardhome
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        - containerPort: 443
+          name: https-tcp
+          protocol: TCP
+        - containerPort: 443
+          name: https-udp
+          protocol: UDP
+        - containerPort: 3000
+          name: web
+          protocol: TCP
+        - containerPort: 53
+          name: dns-tcp
+          protocol: TCP
+        - containerPort: 53
+          name: dns-udp
+          protocol: UDP
+        volumeMounts:
+        - name: adguard-home-storage
+          mountPath: /opt/adguardhome
+      volumes:
+        - name: adguard-home-storage
+          persistentVolumeClaim:
+            claimName: adguard-home-pvc
+
+---       
+# LoadBalancer Service for AdGuard Home
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-home
+  namespace: adguard-home
+spec:
+  selector:
+    app: adguard-home
+  type: LoadBalancer
+  ports:
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    - name: https-tcp
+      port: 443
+      targetPort: 443
+      protocol: TCP
+    - name: https-udp
+      port: 443
+      targetPort: 443
+      protocol: UDP
+    - name: web
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+
