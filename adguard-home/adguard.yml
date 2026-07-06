@@ -40,14 +40,14 @@ spec:
           - --config 
           - /opt/adguardhome/data/AdGuardHome.yaml
         ports:
-        - containerPort: 80
-          name: http
+        - containerPort: 3000
+          name: web
           protocol: TCP
-        - containerPort: 443
-          name: https-tcp
+        - containerPort: 53
+          name: dns-tcp
           protocol: TCP
-        - containerPort: 443
-          name: https-udp
+        - containerPort: 53
+          name: dns-udp
           protocol: UDP
         volumeMounts:
         - name: adguard-home-storage
