@@ -51,9 +51,8 @@ spec:
         - containerPort: 53
           name: dns-udp
           protocol: UDP
-        - containerPort: 8080
+        - containerPort: 80
           name: http-tcp
-          targetPort: 80
           protocol: TCP
         volumeMounts:
         - name: adguard-home-storage
@@ -87,5 +86,9 @@ spec:
       port: 3000
       targetPort: 3000
       protocol: TCP
+    - name: http-tcp
+      port: 8080
+      targetPort: 80
+      protocol: tcp
 
 #random comment to test workflow
