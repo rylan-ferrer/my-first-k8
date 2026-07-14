@@ -89,6 +89,6 @@ spec:
     - name: http-tcp
       port: 8080
       targetPort: 80
-      protocol: tcp
+      protocol: TCP
 
 #random comment to test workflow
