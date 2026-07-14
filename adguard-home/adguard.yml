@@ -19,6 +19,8 @@ kind: Deployment
 metadata:
   name: adguard-home
   namespace: adguard-home
+  annotations:
+    metallb.io/loadBalancerIPs: 192.168.0.211
 spec:
   selector:
     matchLabels:
